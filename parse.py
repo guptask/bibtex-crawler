@@ -2,11 +2,8 @@
 
 import glob
 from pprint import pprint
-import bibtexparser
 from bibtexparser.bparser import BibTexParser
-from bibtexparser.customization import *
-#from bibtexparser.customization import homogenize_latex_encoding
-from bibtexparser.customization import convert_to_unicode
+#from pybtex.database.input import bibtex
 import sys, getopt
 
 def customizations(record):
@@ -39,14 +36,21 @@ def main(argv):
             rootpath = arg
 
     files = glob.glob(rootpath + '/**/*.bib', recursive=True)
-    for bibfile in files:
-        with open(bibfile, encoding='utf-8') as bibtex_file:
-            parser = BibTexParser()
-            parser.customization = customizations
-            #parser.customization = homogenize_latex_encoding
-            parser.customization = convert_to_unicode
-            bib_database = bibtexparser.load(bibtex_file, parser=parser)
-            print(bib_database.entries)
+    for counter, entry in enumerate(files):
+        print('{0}: Parse {1}'.format(counter, entry))
+        parser = BibTexParser()
+        #parser.customization = customizations
+        with open(entry, encoding='utf-8') as bibtex_file:
+            try:
+                bib_database = parser.parse_file(bibtex_file)
+                #print(bib_database.entries)
+                #parser = bibtex.Parser()
+                #bib_data = parser.parse_file(bibtex_file)
+                #bib_data.entries.keys()
+                #break
+            except:
+                print("Oops!", sys.exc_info()[0], "occurred.")
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
